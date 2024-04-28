@@ -3,6 +3,9 @@
 namespace App\Exceptions;
 
 use Illuminate\Foundation\Exceptions\Handler as ExceptionHandler;
+use Illuminate\Http\JsonResponse;
+use Illuminate\Http\Request;
+use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Throwable;
 
 class Handler extends ExceptionHandler
@@ -26,5 +29,22 @@ class Handler extends ExceptionHandler
         $this->reportable(function (Throwable $e) {
             //
         });
+    }
+
+    /**
+     * Prepares a JSON response for exceptions, returning a 404 Not Found error if the route is not found.
+     *
+     * @param Request $request
+     * @param Throwable $e
+     *
+     * @return JsonResponse
+     */
+    protected function prepareJsonResponse($request, Throwable $e)
+    {
+        if ($e instanceof NotFoundHttpException) {
+            return response()->json(['status' => 'error', 'result' => 'Not Found'], 404);
+        }
+
+        return parent::prepareJsonResponse($request, $e);
     }
 }

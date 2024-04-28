@@ -30,5 +30,11 @@ return [
         'secret' => env('AWS_SECRET_ACCESS_KEY'),
         'region' => env('AWS_DEFAULT_REGION', 'us-east-1'),
     ],
+    
+    'tvmaze' => [
+        'base_url' => 'https://api.tvmaze.com',
+        'rate_limit' => 19,
+        'window_seconds' => 10
+    ],
 
 ];

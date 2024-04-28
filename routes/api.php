@@ -1,6 +1,5 @@
 <?php
 
-use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -14,6 +13,22 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
-    return $request->user();
+Route::group(['prefix' => 'v1'], function () {
+    // Routes for the register, login and logout users
+    Route::group(['middleware' => 'api', 'prefix' => 'auth'], function () {
+        Route::post('register', [App\Http\Controllers\Auth\AuthController::class, 'register']);
+        Route::post('login', [App\Http\Controllers\Auth\AuthController::class, 'login']);
+        Route::post('logout', [App\Http\Controllers\Auth\AuthController::class, 'logout']);
+    });
+
+// Route for generate static api_key
+    Route::middleware('jwt.auth')->get('generate-token', [App\Http\Controllers\Auth\GenerateApiKey::class, 'generateNewApiKey']);
+
+// Endpoints group
+    Route::group(['middleware' => 'api.key'], function () {
+        Route::middleware('tvmaze.rate.limit')->get('media-content', [App\Http\Controllers\MediaContent\TvShowsController::class, 'processRequest']);
+    });
 });
+
+
+
